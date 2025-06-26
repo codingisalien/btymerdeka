@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Singapore Independence RPG</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #f5f5f5;
+            color: #333;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #ED2939, #ff6b6b);
+            color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .game-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .stats-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .stat-bar {
+            margin: 10px 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #ED2939;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .event-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .event-title {
+            color: #ED2939;
+            margin-bottom: 15px;
+        }
+
+        .event-description {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .historical-note {
+            background: #f8f9fa;
+            padding: 15px;
+            border-left: 4px solid #ED2939;
+            border-radius: 0 10px 10px 0;
+            margin: 15px 0;
+        }
+
+        .choice-button {
+            width: 100%;
+            background: white;
+            border: 2px solid #ED2939;
+            color: #ED2939;
+            padding: 15px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+            text-align: left;
+            margin: 10px 0;
+        }
+
+        .choice-button:hover {
+            background: #ED2939;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .role-select {
+            padding: 10px;
+            font-size: 1em;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🇸🇬 Singapore's Path to Independence</h1>
+        <p>1955-1965</p>
+    </div>
+
+    <div class="game-container">
+        <div id="role-selection">
+            <select class="role-select" id="role-chooser">
+                <option value="">Choose your role...</option>
+                <option value="PAP">PAP Leader</option>
+                <option value="BS">Barisan Sosialis Leader</option>
+                <option value="UMNO">UMNO Representative</option>
+                <option value="IND">Independent Candidate</option>
+            </select>
+        </div>
+
+        <div id="game-content" style="display: none;">
+            <div class="stats-panel">
+                <h2 id="player-role"></h2>
+                <div class="stat-bar">
+                    <div>Public Support</div>
+                    <div class="progress-bar">
+                        <div id="support-bar" class="progress-fill"></div>
+                    </div>
+                </div>
+                <div class="stat-bar">
+                    <div>Political Influence</div>
+                    <div class="progress-bar">
+                        <div id="influence-bar" class="progress-fill"></div>
+                    </div>
+                </div>
+                <div class="stat-bar">
+                    <div>National Stability</div>
+                    <div class="progress-bar">
+                        <div id="stability-bar" class="progress-fill"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="event-area"></div>
+        </div>
+    </div>
+
+    <script>
+        class Game {
+            constructor() {
+                this.player = {
+                    role: '',
+                    support: 50,
+                    influence: 50,
+                    stability: 50
+                };
+
+                this.events = [
+                    {
+                        title: "Hock Lee Bus Riots (1955)",
+                        description: "Bus workers and students are protesting against poor working conditions.",
+                        historicalNote: "The Hock Lee bus riots resulted in four deaths and was a pivotal moment in Singapore's labour movement.",
+                        choices: [
+                            {text: "Support the workers' demands", impact: {support: 15, influence: -5, stability: -10}},
+                            {text: "Maintain law and order first", impact: {support: -5, influence: 10, stability: 15}},
+                            {text: "Negotiate between parties", impact: {support: 5, influence: 5, stability: 5}}
+                        ]
+                    },
+                    {
+                        title: "Legislative Assembly Elections (1959)",
+                        description: "The first full internal self-government elections are being held.",
+                        historicalNote: "This marked Singapore's first general election with full internal self-government.",
+                        choices: [
+                            {text: "Focus on Chinese community", impact: {support: 10, influence: 5, stability: -5}},
+                            {text: "Campaign on anti-colonial message", impact: {support: 5, influence: 10, stability: 0}},
+                            {text: "Promote multiracial policies", impact: {support: 5, influence: 5, stability: 10}}
+                        ]
+                    },
+                    {
+                        title: "Operation Coldstore (1963)",
+                        description: "Security operation against alleged communist supporters is planned.",
+                        historicalNote: "Operation Coldstore saw the arrest of over 100 alleged communist supporters and opposition leaders.",
+                        choices: [
+                            {text: "Support the operation", impact: {support: -10, influence: 15, stability: 10}},
+                            {text: "Oppose the operation", impact: {support: 10, influence: -15, stability: -10}},
+                            {text: "Maintain neutral stance", impact: {support: 0, influence: -5, stability: 0}}
+                        ]
+                    }
+                ];
+
+                this.currentEvent = 0;
+                this.setupEventListeners();
+            }
+
+            setupEventListeners() {
+                document.getElementById('role-chooser').addEventListener('change', (e) => {
+                    if (e.target.value) {
+                        this.startGame(e.target.value);
+                    }
+                });
+            }
+
+            startGame(role) {
+                this.player.role = role;
+                document.getElementById('role-selection').style.display = 'none';
+                document.getElementById('game-content').style.display = 'block';
+                document.getElementById('player-role').textContent = `Role: ${role} Leader`;
+                this.updateStats();
+                this.showEvent();
+            }
+
+            updateStats() {
+                document.getElementById('support-bar').style.width = `${this.player.support}%`;
+                document.getElementById('influence-bar').style.width = `${this.player.influence}%`;
+                document.getElementById('stability-bar').style.width = `${this.player.stability}%`;
+            }
+
+            showEvent() {
+                if (this.currentEvent >= this.events.length) {
+                    this.endGame();
+                    return;
+                }
+
+                const event = this.events[this.currentEvent];
+                const eventArea = document.getElementById('event-area');
+                
+                eventArea.innerHTML = `
+                    <div class="event-card">
+                        <h2 class="event-title">${event.title}</h2>
+                        <p class="event-description">${event.description}</p>
+                        <div class="historical-note">${event.historicalNote}</div>
+                        <div class="choices">
+                            ${event.choices.map((choice, index) => `
+                                <button class="choice-button" onclick="game.makeChoice(${index})">${choice.text}</button>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            makeChoice(choiceIndex) {
+                const impact = this.events[this.currentEvent].choices[choiceIndex].impact;
+                this.player.support = Math.max(0, Math.min(100, this.player.support + impact.support));
+                this.player.influence = Math.max(0, Math.min(100, this.player.influence + impact.influence));
+                this.player.stability = Math.max(0, Math.min(100, this.player.stability + impact.stability));
+
+                this.updateStats();
+                this.currentEvent++;
+                this.showEvent();
+            }
+
+            endGame() {
+                const totalScore = this.player.support + this.player.influence + this.player.stability;
+                const eventArea = document.getElementById('event-area');
+                
+                eventArea.innerHTML = `
+                    <div class="event-card">
+                        <h2 class="event-title">Game Over!</h2>
+                        <p class="event-description">Final Score: ${totalScore}</p>
+                        <div class="historical-note">
+                            ${this.getFeedback(totalScore)}
+                        </div>
+                        <button class="choice-button" onclick="location.reload()">Play Again</button>
+                    </div>
+                `;
+            }
+
+            getFeedback(score) {
+                if (score > 250) return "Outstanding! You've led Singapore with great success!";
+                if (score > 200) return "Good job! You've maintained a stable leadership.";
+                if (score > 150) return "You've faced some challenges but managed to survive.";
+                return "The path to independence proved challenging under your leadership.";
+            }
+        }
+
+        const game = new Game();
+    </script>
+</body>
+</html>
